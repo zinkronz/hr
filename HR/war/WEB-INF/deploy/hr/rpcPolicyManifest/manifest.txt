@@ -1,0 +1,3 @@
+# Module hr
+# RPC service class, partial path of RPC policy file
+com.HR.client.GreetingService, EF20BFEE3DD25061B0AC11D1373698E5.gwt.rpc
