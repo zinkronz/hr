@@ -33,9 +33,10 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements
 		
 
 		PersistenceManager pm = Persistence.getPersistenceManager();
-		int id=0;
+		int id=0;	
 		String a="";
 		
+		 
 		int point = 0;
 		try{
 		User q = pm.getObjectById(User.class, input);
