@@ -1,0 +1,2 @@
+serviceClass: com.HR.client.GreetingService
+path: EA3B4319B5719117FA45E84BCAFD5B88.gwt.rpc

@@ -1,2 +1,0 @@
-serviceClass: com.HR.client.GreetingService
-path: EF20BFEE3DD25061B0AC11D1373698E5.gwt.rpc

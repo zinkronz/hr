@@ -1,5 +1,7 @@
 package com.HR.client;
 
+
+import com.HR.shared.UserSessionInfo;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -8,5 +10,10 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
  */
 @RemoteServiceRelativePath("greet")
 public interface GreetingService extends RemoteService {
-	String greetServer(String name) throws IllegalArgumentException;
+	String greetServer(String username, String password);
+
+	UserSessionInfo getUserSessionInfo() throws NotLoggedInException;
+	
+	@SuppressWarnings("serial")
+	static class NotLoggedInException extends Exception {}
 }

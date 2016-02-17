@@ -1,6 +1,7 @@
 package com.HR.client;
 
 import com.HR.shared.FieldVerifier;
+import com.HR.shared.UserSessionInfo;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
@@ -19,6 +20,7 @@ import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Frame;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -55,6 +57,7 @@ public class HR implements EntryPoint {
 	int currentHeight=0;
 	String currentWidthString;
 	String currentHeightString; 
+	int testOn=1;
 	VerticalPanel mainVerticalPanel = new VerticalPanel();
 	HorizontalPanel mainHorizontalPanel = new HorizontalPanel();
 	HorizontalPanel mainHorizontalPanel2 = new HorizontalPanel();
@@ -65,13 +68,17 @@ public class HR implements EntryPoint {
 	HorizontalPanel mainHorizontalPanel6 = new HorizontalPanel();
 	HorizontalPanel mainHorizontalPanel7 = new HorizontalPanel();
 	HorizontalPanel mainHorizontalPanel8 = new HorizontalPanel();
+	private UserSessionInfo userInfo = null;
 	
 	/**
 	 * This is the entry point method.
 	 */
 	public void onModuleLoad() {
 		
+		getUserSessionInfo ();
 		
+	}
+		private void onLoginScreeen() {
 		screenSize();
 		
 		Image imageLogo = new Image();
@@ -133,14 +140,16 @@ public class HR implements EntryPoint {
 		final TextBox userNameTextBox = new TextBox();
 		final PasswordTextBox passwordTextBox = new PasswordTextBox();
 		
-		userNameTextBox.setText("test");
-		passwordTextBox.setText("test");
+		
 		
 		final Button loginButton = new Button("Login");
 		userNameTextBox.setHeight("10px");
 		passwordTextBox.setHeight("10px");
 		userNameTextBox.setWidth("200px");
 		passwordTextBox.setWidth("200px");
+		
+		userNameTextBox.setText("fahmi");
+		passwordTextBox.setText("fahmi");
 		
 		final DialogBox dialogBox = createDialogBox();
 	    dialogBox.setGlassEnabled(true);
@@ -189,11 +198,38 @@ public class HR implements EntryPoint {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				if(userNameTextBox.getText().equals("test") && passwordTextBox.getText().equals("test"))
-				{
-					onModuleStart();
+			
+				            sendNameToServer();
+				            
 					
-				}else{Window.alert("Wrong password");}	
+			}
+
+					private void sendNameToServer() {
+				
+				greetingService.greetServer(userNameTextBox.getText(),passwordTextBox.getText(),
+						new AsyncCallback<String>() {
+							public void onFailure(Throwable caught) {
+								Window.alert("System down/error. Please try again later. "+caught.getMessage());
+							}
+
+							public void onSuccess(String result) {
+							
+								if (result.equals("correct")){
+									
+									onModuleStart();
+									
+								}
+								else {
+									
+									
+									Window.alert("Invalid username or password");
+									
+									
+								}
+							
+							}
+						});
+				
 			}});
 
 		
@@ -253,6 +289,10 @@ public class HR implements EntryPoint {
 		mainVerticalPanel.add(new HTML("&nbsp"));
 		mainVerticalPanel.add(mainHorizontalPanel4);
 		
+		// Frame frame = new Frame("http://www.hlive.my");
+		// frame.setWidth("900px");
+		 //frame.setHeight("900px");
+		 //mainVerticalPanel.add(frame);
 		
 		// We can add style names to widgets
 		sendButton.addStyleName("sendButton");
@@ -315,20 +355,18 @@ public class HR implements EntryPoint {
 			/**
 			 * Send the name from the nameField to the server and wait for a response.
 			 */
-			private void sendNameToServer() {
+			public void sendNameToServer() {
 				// First, we validate the input.
 				errorLabel.setText("");
 				String textToServer = nameField.getText();
-				if (!FieldVerifier.isValidName(textToServer)) {
-					errorLabel.setText("Please enter at least four characters");
-					return;
-				}
+				//String password = passwordField.
+				
 
 				// Then, we send the input to the server.
 				sendButton.setEnabled(false);
 				textToServerLabel.setText(textToServer);
 				serverResponseLabel.setText("");
-				greetingService.greetServer(textToServer,
+				greetingService.greetServer(textToServer,"",
 						new AsyncCallback<String>() {
 							public void onFailure(Throwable caught) {
 								// Show the RPC error message to the user
@@ -357,6 +395,23 @@ public class HR implements EntryPoint {
 		MyHandler handler = new MyHandler();
 		sendButton.addClickHandler(handler);
 		nameField.addKeyUpHandler(handler);
+	}
+
+	private void getUserSessionInfo() {
+		 greetingService.getUserSessionInfo (new AsyncCallback<UserSessionInfo> () {
+		      public void onFailure(Throwable caught) 
+		      {
+		         Window.alert ("You have not logged in yet. Refresh this page to try again."+ caught.getMessage());
+		         onLoginScreeen();
+				}
+
+		      public void onSuccess (UserSessionInfo result) 
+		      {
+		         userInfo = result;
+		         onModuleStart();
+		      }
+		   });
+		
 	}
 
 	//main System Start after login
@@ -404,8 +459,11 @@ public class HR implements EntryPoint {
 	       "", new ClickHandler() {
 	          public void onClick(ClickEvent event) {
 	            dialogBox.hide();
-	          }
-	        });
+	            //test datastore
+	         
+
+	
+	          } });
 	    dialogContents.add(closeButton);
 	    if (LocaleInfo.getCurrentLocale().isRTL()) {
 	      dialogContents.setCellHorizontalAlignment(
